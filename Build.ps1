@@ -12,7 +12,26 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$SolutionPath = "ScriptProPlus.sln"
+$SolutionPath = Join-Path $PSScriptRoot "ScriptProPlus.sln"
+
+# Use the Visual Studio toolchain for WPF/WinForms resources and WiX.
+$MSBuildPath = $null
+if ($env:VSINSTALLDIR) {
+    $Candidate = Join-Path $env:VSINSTALLDIR "MSBuild\Current\Bin\MSBuild.exe"
+    if (Test-Path $Candidate) { $MSBuildPath = $Candidate }
+}
+if (!$MSBuildPath) {
+    $VsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+    if (Test-Path $VsWhere) {
+        $MSBuildPath = & $VsWhere -latest -products * -version '[18.0,19.0)' -requires Microsoft.Component.MSBuild -find 'MSBuild\Current\Bin\MSBuild.exe' | Select-Object -First 1
+    }
+}
+if (!$MSBuildPath -or !(Test-Path $MSBuildPath)) {
+    throw "Visual Studio 2026 (or Build Tools) with the .NET desktop development workload is required."
+}
+if ((Get-Item $MSBuildPath).VersionInfo.FileMajorPart -lt 18) {
+    throw "Visual Studio 2026 MSBuild 18 or later is required."
+}
 
 # Determine configuration
 $Config = if ($Release -or $Setup -or $Standalone) { "Release" } else { "Debug" }
@@ -25,50 +44,35 @@ Write-Host "Configuration: $Config"
 Write-Host "Platform: $Platform"
 Write-Host ""
 
-# Build the solution
-Write-Host "Restoring dependencies..." -ForegroundColor Yellow
-dotnet restore $SolutionPath
-
-if ($Setup) {
-    Write-Host "Restoring installer dependencies..." -ForegroundColor Yellow
-    dotnet restore ScriptProSetup\ScriptProSetup.wixproj
-}
-
-Write-Host "Building solution..." -ForegroundColor Yellow
-msbuild $SolutionPath /p:Configuration=$Config /p:Platform=$Platform /t:Rebuild /m /v:minimal
+# Restore and build with the same toolchain. The x64 solution includes the installer.
+Write-Host "Restoring and building solution..." -ForegroundColor Yellow
+& $MSBuildPath $SolutionPath /restore /p:Configuration=$Config /p:Platform=$Platform /t:Rebuild /m /v:minimal
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Build failed!" -ForegroundColor Red
-    exit 1
+    throw "MSBuild exited with code $LASTEXITCODE."
 }
 
 Write-Host "Build successful!" -ForegroundColor Green
 Write-Host ""
 
-$OutputPath = "Binaries\$Platform\$Config\net8.0-windows"
+$OutputPath = Join-Path $PSScriptRoot "Binaries\$Platform\$Config\net10.0-windows"
+$ReleasePath = Join-Path $PSScriptRoot "Release"
 Write-Host "Output: $OutputPath" -ForegroundColor Green
 
 # Create MSI Installer
 if ($Setup) {
     Write-Host ""
-    Write-Host "Building installer..." -ForegroundColor Yellow
-    
-    # Build WiX installer
-    msbuild ScriptProSetup\ScriptProSetup.wixproj /p:Configuration=$Config /p:Platform=x64 /v:minimal
-    
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "Installer build failed!" -ForegroundColor Red
-        exit 1
-    }
-    
-    $MsiPath = "ScriptProSetup\bin\$Config\ScriptProSetup.msi"
+    $MsiPath = Join-Path $PSScriptRoot "ScriptProSetup\bin\$Config\ScriptProSetup.msi"
     if (Test-Path $MsiPath) {
         Write-Host "Installer created: $MsiPath" -ForegroundColor Green
         
         # Copy to Release folder
-        if (!(Test-Path "Release")) { New-Item -ItemType Directory -Path "Release" | Out-Null }
-        Copy-Item $MsiPath "Release\ScriptProSetup.msi" -Force
+        if (!(Test-Path $ReleasePath)) { New-Item -ItemType Directory -Path $ReleasePath | Out-Null }
+        Copy-Item $MsiPath (Join-Path $ReleasePath "ScriptProSetup.msi") -Force
         Write-Host "Copied to: Release\ScriptProSetup.msi" -ForegroundColor Green
+    } else {
+        throw "Expected installer was not produced: $MsiPath"
     }
 }
 
@@ -77,7 +81,7 @@ if ($Standalone) {
     Write-Host ""
     Write-Host "Creating standalone package..." -ForegroundColor Yellow
     
-    $StandaloneDir = "Standalone\ScriptPro-Portable"
+    $StandaloneDir = Join-Path $PSScriptRoot "Standalone\ScriptPro-Portable"
     if (Test-Path $StandaloneDir) {
         Remove-Item $StandaloneDir -Recurse -Force
     }
@@ -88,18 +92,18 @@ if ($Standalone) {
     Copy-Item "$OutputPath\*" $StandaloneDir -Recurse -Force
     
     # Copy README.md from root
-    if (Test-Path "README.md") {
-        Copy-Item "README.md" $StandaloneDir -Force
+    if (Test-Path (Join-Path $PSScriptRoot "README.md")) {
+        Copy-Item (Join-Path $PSScriptRoot "README.md") $StandaloneDir -Force
     }
     
     Write-Host "Standalone package created: $StandaloneDir" -ForegroundColor Green
     
     # Create ZIP
-    $ZipPath = "Release\ScriptPro-Portable.zip"
+    $ZipPath = Join-Path $ReleasePath "ScriptPro-Portable.zip"
     if (Test-Path $ZipPath) { Remove-Item $ZipPath -Force }
     
     # Create Release folder if needed
-    if (!(Test-Path "Release")) { New-Item -ItemType Directory -Path "Release" | Out-Null }
+    if (!(Test-Path $ReleasePath)) { New-Item -ItemType Directory -Path $ReleasePath | Out-Null }
     
     Compress-Archive -Path "$StandaloneDir\*" -DestinationPath $ZipPath
     

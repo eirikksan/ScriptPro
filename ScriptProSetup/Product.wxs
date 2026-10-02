@@ -1,4 +1,4 @@
-﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx">
   <Package Name="ScriptPro" Language="1033" Version="3.0.0.0" Manufacturer="ADN" 
            UpgradeCode="a613f0ca-60c7-45f8-b4fa-08ad6c16a50a" 
            InstallerVersion="200">
@@ -8,35 +8,35 @@
     <!-- Per-Machine Installation (Admin Required) -->
     <!-- Installs to: C:\Program Files\ScriptPro (64-bit) -->
     
-    <!-- .NET 8.0 Runtime Detection -->
-    <!-- This installer requires .NET 8.0 Desktop Runtime to be installed -->
-    <!-- Download from: https://dotnet.microsoft.com/download/dotnet/8.0 -->
-    
-    <Launch Message="This application requires .NET 8.0 Desktop Runtime. Please install it from https://dotnet.microsoft.com/download/dotnet/8.0" Condition="Installed OR (VersionNT &gt;= 601)" />
+    <!-- Match ScriptUI.runtimeconfig.json: .NET 10 desktop, LatestMinor roll-forward. -->
+    <netfx:DotNetCompatibilityCheck Id="DotNet10Desktop" Property="NET10DESKTOPRUNTIME"
+                                  Platform="x64" RuntimeType="desktop" Version="10.0.0" RollForward="latestMinor" />
+    <Launch Message="This application requires the x64 .NET 10 Desktop Runtime. Install it from https://dotnet.microsoft.com/download/dotnet/10.0"
+            Condition="Installed OR (NET10DESKTOPRUNTIME AND NET10DESKTOPRUNTIME = &quot;0&quot;)" />
 
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <!-- Main Application Files -->
       <Component Id="ScriptUI.exe" Guid="D2BD1787-84E7-4E82-9C52-D798FA3BF731" Bitness="always64">
-        <File Id="file_ScriptUI_exe" Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\ScriptUI.exe" KeyPath="yes" Checksum="yes" />
+        <File Id="file_ScriptUI_exe" Source="$(var.ScriptUI.TargetDir)\ScriptUI.exe" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="ScriptUI.dll" Guid="E1234567-89AB-CDEF-0123-456789ABCDEF" Bitness="always64">
-        <File Id="file_ScriptUI_dll" Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\ScriptUI.dll" KeyPath="yes" />
+        <File Id="file_ScriptUI_dll" Source="$(var.ScriptUI.TargetDir)\ScriptUI.dll" KeyPath="yes" />
       </Component>
       <Component Id="DrawingListUC.dll" Guid="7EA07F38-9DE2-4D23-B04C-C447B09A44BE" Bitness="always64">
-        <File Id="file_DrawingListUC_dll" Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\DrawingListUC.dll" KeyPath="yes" />
+        <File Id="file_DrawingListUC_dll" Source="$(var.ScriptUI.TargetDir)\DrawingListUC.dll" KeyPath="yes" />
       </Component>
       
       <!-- Configuration Files -->
       <Component Id="ConfigFiles" Guid="B1234567-89AB-CDEF-0123-456789ABCDEF" Bitness="always64">
-        <File Id="file_ScriptUI_runtimeconfig" Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\ScriptUI.runtimeconfig.json" KeyPath="yes" />
-        <File Id="file_ScriptUI_deps" Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\ScriptUI.deps.json" />
-        <File Id="file_ScriptUI_config" Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\ScriptUI.dll.config" />
-        <File Id="file_DrawingListUC_config" Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\DrawingListUC.dll.config" />
+        <File Id="file_ScriptUI_runtimeconfig" Source="$(var.ScriptUI.TargetDir)\ScriptUI.runtimeconfig.json" KeyPath="yes" />
+        <File Id="file_ScriptUI_deps" Source="$(var.ScriptUI.TargetDir)\ScriptUI.deps.json" />
+        <File Id="file_ScriptUI_config" Source="$(var.ScriptUI.TargetDir)\ScriptUI.dll.config" />
+        <File Id="file_DrawingListUC_config" Source="$(var.ScriptUI.TargetDir)\DrawingListUC.dll.config" />
       </Component>
       
       <!-- Help Files -->
       <Component Id="HelpFiles" Guid="C1234567-89AB-CDEF-0123-456789ABCDEF" Bitness="always64">
-        <File Id="file_Modern_Help_html" Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Modern.Help.html" KeyPath="yes" />
+        <File Id="file_Modern_Help_html" Source="$(var.ScriptUI.TargetDir)\Modern.Help.html" KeyPath="yes" />
         <File Id="file_README_md" Source="$(var.SolutionDir)\README.md" />
       </Component>
     </DirectoryRef>
@@ -49,62 +49,62 @@
     <!-- Image Files Component Group -->
     <ComponentGroup Id="ImagesComponentGroup" Directory="ImagesFolder">
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\add.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\add.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\checked-unchecked.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\checked-unchecked.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\cog.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\cog.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\delete.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\delete.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\folder_add.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\folder_add.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\help.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\help.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\magic_wand_2.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\magic_wand_2.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\script-add.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\script-add.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\script-go-checked.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\script-go-checked.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\script-go-failed.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\script-go-failed.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\script-go-selected.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\script-go-selected.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\script-new.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\script-new.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\script-save.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\script-save.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\smallcog.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\smallcog.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\stop.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\stop.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\table_add.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\table_add.png" />
       </Component>
       <Component Guid="*" Bitness="always64">
-        <File Source="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\wrench.png" />
+        <File Source="$(var.ScriptUI.TargetDir)\Images\wrench.png" />
       </Component>
     </ComponentGroup>
 
     <!-- Step 2: Add the shortcut to your installer package -->
     <DirectoryRef Id="ApplicationProgramsFolder">
       <Component Id="ApplicationShortcut" Guid="86FD1226-0944-4E82-99A4-6240D4509A7A" Bitness="always64">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="ScriptPro" Description="ScriptPro 3.0 is a batch processing utility that allows you to apply a set of commands to multiple drawings. Requires .NET 8.0 Desktop Runtime." Target="[#file_ScriptUI_exe]" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="ScriptPro" Description="ScriptPro 3.0 is a batch processing utility that allows you to apply a set of commands to multiple drawings. Requires .NET 10 Desktop Runtime." Target="[APPLICATIONROOTDIRECTORY]ScriptUI.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
         <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
         <RegistryValue Root="HKCU" Key="Software\ADN\ScriptPro" Name="installed" Type="integer" Value="1" KeyPath="yes" />
       </Component>
@@ -123,7 +123,7 @@
       <ComponentRef Id="ApplicationShortcut" />
     </Feature>
     
-    <Icon Id="icon.ico" SourceFile="$(var.SolutionDir)\Binaries\x64\$(var.Configuration)\net8.0-windows\Images\cog.png" />
+    <Icon Id="icon.ico" SourceFile="$(var.ScriptUI.TargetDir)\Images\ScriptPro3.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
   
       <!-- 64-bit Installation Directory -->

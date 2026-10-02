@@ -1,7 +1,9 @@
 ﻿// AcadComUtils.cs
-// .NET 8 / x64
+// .NET 10 / x64
 // Utility class for AutoCAD COM operations
 // Used exclusively by DrawingListControl.cs
+
+#nullable enable annotations
 
 using Microsoft.Win32;
 using System;

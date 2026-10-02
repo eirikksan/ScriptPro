@@ -14,7 +14,7 @@ Validate ScriptPro run behavior and produce concrete, reviewable evidence:
 
 ## Inputs
 
-- Built app: `Binaries\x64\Release\net8.0-windows\ScriptUI.exe`
+- Built app: `Binaries\x64\Release\net10.0-windows\ScriptUI.exe`
 - Project files: `TestFiles\xyz.bpl`, `TestFiles\xyz_noexe.bpl`
 - Script/data files under `TestFiles\`
 
@@ -22,7 +22,7 @@ Validate ScriptPro run behavior and produce concrete, reviewable evidence:
 
 ```powershell
 $RepoRoot = (Get-Location).Path
-$Exe = Join-Path $RepoRoot "Binaries\x64\Release\net8.0-windows\ScriptUI.exe"
+$Exe = Join-Path $RepoRoot "Binaries\x64\Release\net10.0-windows\ScriptUI.exe"
 if (-not (Test-Path $Exe)) { throw "Missing ScriptUI.exe. Build Release|x64 first." }
 
 # Optional: set explicit AutoCAD path for Scenario 3 launcher convenience

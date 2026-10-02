@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
@@ -24,6 +25,7 @@ namespace DrawingListUC
     private bool _runWithoutOpen = false;
     private bool _useCmdLine = false;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string IniScript
     {
       get
@@ -44,6 +46,7 @@ namespace DrawingListUC
     //
 
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string acadExePath
     {
       get
@@ -62,6 +65,7 @@ namespace DrawingListUC
       }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string logFilePath
     {
         get
@@ -103,6 +107,7 @@ namespace DrawingListUC
         return _createImage;
       }
     }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public int toolSpeed
     {
         get
@@ -121,6 +126,7 @@ namespace DrawingListUC
     }
 
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool SearchAllDirectories
     {
       get
@@ -133,6 +139,7 @@ namespace DrawingListUC
       }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool RunWithoutOpen
     {
         get
@@ -153,6 +160,7 @@ namespace DrawingListUC
     }
 
       //Not used for now..
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool UseScriptAsCmdLine
     {
         get
@@ -172,6 +180,7 @@ namespace DrawingListUC
         }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool DiagnosticMode
     {
       get

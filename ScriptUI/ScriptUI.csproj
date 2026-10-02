@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <OutputType>WinExe</OutputType>
@@ -62,7 +62,7 @@
     <ProjectReference Include="..\DrawingListUC\DrawingListUC.csproj" />
   </ItemGroup>
 
-  <!-- System.Windows.Controls.Ribbon is included in WPF for .NET 8.0 -->
+  <!-- System.Windows.Controls.Ribbon is included in WPF for .NET 10 -->
   <!-- No separate NuGet package needed -->
 
   <ItemGroup>
@@ -103,7 +103,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Copy image files to output directory as a workaround for .NET 8.0 WPF resource loading -->
+    <!-- Copy image files to output directory for WPF resource loading -->
     <Content Include="Images\add.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

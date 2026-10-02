@@ -171,18 +171,21 @@ namespace DrawingListUC
         bool wizardMode = false;
 
         // Some properties for the host application to use
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool Modified
         {
             set { _modified = value; }
             get { return _modified; }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string ProjectName
         {
             set { _projectName = value; }
             get { return _projectName; }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Object HostApplication
         {
             set { _hostApplication = value; }
