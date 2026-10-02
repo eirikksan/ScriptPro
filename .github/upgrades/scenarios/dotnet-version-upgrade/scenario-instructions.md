@@ -43,3 +43,4 @@
 - **Managed desktop projects**: Prefer IDE build; use full Visual Studio MSBuild with /restore for configuration-specific WPF/WinForms validation.
 - **ScriptProSetup.wixproj**: Existing WixToolset.Sdk 6.0.2 and NetFx extension restore under Visual Studio 2026 MSBuild; retain this toolset unless a verified incompatibility requires a change.
 - **Historical Source projects**: Not part of ScriptProPlus.sln; preserve them unchanged.
+- **IDE compatibility follow-up**: User reports ScriptProSetup is incompatible with Visual Studio 2026. Successful MSBuild/MSI builds do not verify IDE project loading. No WiX/HeatWave extension manifest was found in the checked VS 18 Professional or per-user extension directories; install/enable FireGiant HeatWave for VS 2026 and verify project loading before declaring IDE compatibility resolved.
